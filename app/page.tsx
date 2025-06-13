@@ -126,7 +126,7 @@ export default function HomePage() {
             </div>
             <div className="relative h-64 md:h-96 rounded-xl overflow-hidden shadow-xl">
               <Image
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-I8QLFGZ1PqOlNlAg5J1qR6GN91wDSK.png"
+                src="images/homephoto.png"
                 alt="OpinaAi"
                 fill
                 className="object-cover"
