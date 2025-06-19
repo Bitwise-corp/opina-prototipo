@@ -113,7 +113,7 @@ export default function HomePage() {
 
         {/* Hero Section */}
         <section className="py-12 md:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="flex flex-col items-center text-center max-w-3xl mx-auto space-y-6">
             <div className="space-y-6">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
                 O seu canal de comunicação com o Governo
@@ -124,14 +124,7 @@ export default function HomePage() {
               </p>
               {/* Botões removidos conforme solicitado */}
             </div>
-            <div className="relative h-64 md:h-96 rounded-xl overflow-hidden shadow-xl">
-              <Image
-                src="images/homephoto.png"
-                alt="OpinaAi"
-                fill
-                className="object-cover"
-              />
-            </div>
+
           </div>
         </section>
 
