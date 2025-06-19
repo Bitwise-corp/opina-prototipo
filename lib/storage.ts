@@ -1,4 +1,3 @@
-// Types for our data model
 export interface Complaint {
   id: string
   title: string
@@ -12,7 +11,7 @@ export interface Complaint {
   userName: string
   userAvatar?: string
   date: string
-  likes: string[] // Array of user IDs who liked
+  likes: string[]
   comments: Comment[]
   location?: {
     lat: number
@@ -43,7 +42,6 @@ export interface User {
   isAdmin: boolean
 }
 
-// Mock data generator
 export function generateMockData() {
   const cities = [
     "São Paulo",
@@ -55,28 +53,6 @@ export function generateMockData() {
     "Rio de Janeiro",
     "Salvador",
   ]
-
-  const categories = [
-    "Infraestrutura",
-    "Saúde",
-    "Educação",
-    "Segurança",
-    "Transporte",
-    "Meio Ambiente",
-    "Serviços Públicos",
-    "Outros",
-  ]
-
-  const types = {
-    Infraestrutura: ["Buraco na Via", "Iluminação Pública", "Calçada Danificada", "Alagamento", "Sinalização"],
-    Saúde: ["Atendimento Ruim", "Falta de Medicamentos", "Condições Sanitárias", "Tempo de Espera"],
-    Educação: ["Estrutura Escolar", "Falta de Professores", "Material Didático", "Transporte Escolar"],
-    Segurança: ["Falta de Policiamento", "Iluminação Precária", "Áreas de Risco", "Câmeras de Segurança"],
-    Transporte: ["Transporte Público", "Pontos de Ônibus", "Horários", "Condições dos Veículos"],
-    "Meio Ambiente": ["Poluição", "Lixo/Entulho", "Áreas Verdes", "Poda de Árvores"],
-    "Serviços Públicos": ["Falta de Água", "Energia Elétrica", "Coleta de Lixo", "Limpeza Urbana"],
-    Outros: ["Barulho Excessivo", "Eventos", "Fiscalização", "Outros"],
-  }
 
   const userNames = [
     "Maria Silva",
@@ -93,33 +69,50 @@ export function generateMockData() {
     "Bruno Gomes",
   ]
 
+  const complaintImageMapping = {
+    "Buraco na Via": {
+      category: "Infraestrutura",
+      image: "/buraco.png"
+    },
+    "Iluminação Pública": {
+      category: "Infraestrutura",
+      image: "/poste_danificado.png"
+    },
+    "Calçada Danificada": {
+      category: "Infraestrutura",
+      image: "/calcada_danificada.png"
+    },
+    "Atendimento Ruim": {
+      category: "Saúde",
+      image: "/saude.png"
+    },
+    "Transporte Público": {
+      category: "Transporte",
+      image: "/transporte_lotado.png"
+    },
+    "Lixo/Entulho": {
+      category: "Meio Ambiente",
+      image: "/entulho.png"
+    },
+    
+  }
+
   const complaints: Complaint[] = []
+  const availableComplaintTypes = Object.keys(complaintImageMapping);
 
-  // Generate 25 mock complaints (more than the required 20)
-  for (let i = 1; i <= 25; i++) {
+  availableComplaintTypes.forEach((complaintType, index) => {
     const cityIndex = Math.floor(Math.random() * cities.length)
-    const categoryIndex = Math.floor(Math.random() * categories.length)
-    const category = categories[categoryIndex]
-    const typeOptions = types[category as keyof typeof types]
-    const typeIndex = Math.floor(Math.random() * typeOptions.length)
     const userIndex = Math.floor(Math.random() * userNames.length)
-
-    // Generate random date within the last 30 days
+    const complaintDetails = complaintImageMapping[complaintType as keyof typeof complaintImageMapping];
+    
     const date = new Date()
     date.setDate(date.getDate() - Math.floor(Math.random() * 30))
 
-    // Generate random status
     const statusOptions = ["Aguardando", "Em Andamento", "Resolvido"] as const
     const status = statusOptions[Math.floor(Math.random() * statusOptions.length)]
 
-    // Generate random number of images (0-3)
-    const imageCount = Math.floor(Math.random() * 4)
-    const images = Array.from(
-      { length: imageCount },
-      (_, index) => `/placeholder.svg?height=400&width=600&text=Imagem+${i}-${index + 1}`,
-    )
+    const images = [complaintDetails.image];
 
-    // Generate random number of comments (0-5)
     const commentCount = Math.floor(Math.random() * 6)
     const comments: Comment[] = []
 
@@ -129,40 +122,36 @@ export function generateMockData() {
       commentDate.setHours(commentDate.getHours() + Math.floor(Math.random() * 24))
 
       comments.push({
-        id: `comment-${i}-${j}`,
+        id: `comment-${index}-${j}`,
         userId: `user-${commentUserIndex}`,
         userName: userNames[commentUserIndex],
-        text: `Este é um comentário sobre a reclamação #${i}. ${Math.random() > 0.5 ? "Concordo com o problema relatado." : "Também estou enfrentando este problema na região."}`,
+        text: `Este é um comentário sobre a reclamação.`,
         date: commentDate.toISOString(),
       })
     }
 
-    // Generate random number of likes (0-50)
     const likeCount = Math.floor(Math.random() * 51)
     const likes = Array.from({ length: likeCount }, (_, index) => `user-like-${index}`)
 
-    // Add response for some resolved complaints
     let response
     if (status === "Resolvido" || (status === "Em Andamento" && Math.random() > 0.5)) {
       const responseDate = new Date(date)
       responseDate.setHours(responseDate.getHours() + Math.floor(Math.random() * 72))
 
       response = {
-        text: `Agradecemos pelo relato. ${status === "Resolvido" ? "O problema foi solucionado." : "Estamos trabalhando para resolver este problema o mais rápido possível."}`,
+        text: `Agradecemos pelo relato. O problema foi solucionado.`,
         date: responseDate.toISOString(),
         adminName: "Administrador Municipal",
       }
     }
 
-    const type = typeOptions[typeIndex]
-
     complaints.push({
-      id: `complaint-${i}`,
-      title: `${type} em ${cities[cityIndex]} - ${i}`,
-      description: `Esta é uma reclamação sobre ${type.toLowerCase()} na cidade de ${cities[cityIndex]}. O problema está causando transtornos para os moradores da região há várias semanas.`,
+      id: `complaint-${index}`,
+      title: `${complaintType} em ${cities[cityIndex]}`,
+      description: `Esta é uma reclamação sobre ${complaintType.toLowerCase()} na cidade de ${cities[cityIndex]}. O problema está causando transtornos para os moradores da região.`,
       city: cities[cityIndex],
-      category,
-      type,
+      category: complaintDetails.category,
+      type: complaintType,
       status,
       images,
       userId: `user-${userIndex}`,
@@ -177,9 +166,8 @@ export function generateMockData() {
       },
       response,
     })
-  }
+  });
 
-  // Create mock users including admins
   const users: User[] = [
     {
       id: "user-admin-1",
@@ -195,7 +183,6 @@ export function generateMockData() {
     },
   ]
 
-  // Add all the mock users
   userNames.forEach((name, index) => {
     users.push({
       id: `user-${index}`,
@@ -205,17 +192,13 @@ export function generateMockData() {
     })
   })
 
-  // Store in localStorage
   localStorage.setItem("opinaai-complaints", JSON.stringify(complaints))
   localStorage.setItem("opinaai-users", JSON.stringify(users))
-
-  // Set current user for testing
   localStorage.setItem("opinaai-current-user", JSON.stringify(users[1]))
 
   return { complaints, users }
 }
 
-// Storage functions
 export function getComplaints(): Complaint[] {
   const stored = localStorage.getItem("opinaai-complaints")
   if (!stored) {
@@ -287,7 +270,6 @@ export function respondToComplaint(complaintId: string, response: { text: string
     date: new Date().toISOString(),
   }
 
-  // Update status if it was awaiting response
   if (complaint.status === "Aguardando") {
     complaint.status = "Em Andamento"
   }
@@ -303,10 +285,6 @@ export function updateComplaintStatus(complaintId: string, status: "Aguardando" 
   saveComplaint(complaint)
 }
 
-// Initialize data if not already present
 export function initializeData(): void {
-  const complaints = localStorage.getItem("opinaai-complaints")
-  if (!complaints) {
-    generateMockData()
-  }
+  generateMockData();
 }
